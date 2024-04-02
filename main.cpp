@@ -19,22 +19,20 @@ vector<vector<double>> hessian() {
 }
 
 vector<double> solve_linear_system(vector<vector<double>> hess, vector<double> grad) {
-    int n = hess.size();
-    for (int i = 0; i < n - 1; i++) {
-        for (int j = i + 1; j < n; j++) {
+    for (int i = 0; i < hess.size() - 1; i++) {
+        for (int j = i + 1; j < hess.size(); j++) {
             double factor = hess[j][i] / hess[i][i];
-            for (int k = i; k < n; k++) {
+            for (int k = i; k < hess.size(); k++) {
                 hess[j][k] -= factor * hess[i][k];
             }
             grad[j] -= factor * grad[i];
         }
     }
 
-    // Back substitution
-    vector<double> x(n);
-    for (int i = n - 1; i >= 0; i--) {
+    vector<double> x(hess.size());
+    for (int i = hess.size() - 1; i >= 0; i--) {
         double sum = 0;
-        for (int j = i + 1; j < n; j++) {
+        for (int j = i + 1; j < hess.size(); j++) {
             sum += hess[i][j] * x[j];
         }
         x[i] = (grad[i] - sum) / hess[i][i];
@@ -43,7 +41,6 @@ vector<double> solve_linear_system(vector<vector<double>> hess, vector<double> g
     return x;
 }
 
-// Newton's method implementation
 vector<double> newton(vector<double> x, double eps) {
     vector<double> grad = gradient(x);
     vector<vector<double>> hess = hessian();
@@ -76,8 +73,4 @@ int main() {
     vector<double> solution = newton(x0, eps);
 
     cout << "\nMinimum point: x = (" << fixed << setprecision(3) << solution[0] << ", " << solution[1] << "), Minimum value: " << f(solution)[0] << endl;
-
-    cout << endl;
-
-    return 0;
 }
